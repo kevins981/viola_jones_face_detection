@@ -1,9 +1,11 @@
 from PIL import Image
+from sklearn import preprocessing
+from sklearn.preprocessing import MinMaxScaler
 import numpy as np
 import matplotlib.pyplot as plt
+import glob
 
 from integral_img import * 
-
 
 # Takes in 2D matrix, displays heat map
 def plot_matrix(integral_image):
@@ -14,25 +16,15 @@ def plot_matrix(integral_image):
 	min_value = flattened[1] # Minimum value excluding -999
 	plt.imshow(integral_image, cmap='hot', interpolation='nearest', vmin=min_value, vmax=integral_image.max())
 	plt.show()
-
-
-np.set_printoptions(linewidth = 400)
-
-kevin1 = Image.open("../24x24/kevin_1.jpg")
-kevin_grey = kevin1.convert("L")
-
-kevin_grey.save("../24x24/kevin_grey.jpg")
-
-pixel_list = list(kevin_grey.getdata())
+	
 SUB_WINDOW_SIZE_X = 24
 SUB_WINDOW_SIZE_Y = 24
 
-array = np.array(pixel_list, dtype=int)
-#array = np.ones((24, 24), dtype=int) #new array to be returned 
-array = array.reshape(SUB_WINDOW_SIZE_Y, SUB_WINDOW_SIZE_X)  
-integral_image = image_integrate(array, SUB_WINDOW_SIZE_Y, SUB_WINDOW_SIZE_X) 
-print integral_image
-print array
+np.set_printoptions(linewidth = 400)
+
+train_img_list = glob.glob('../24x24/normalized/*.jpg') 
+
+integral_image = image_integrate(grey_pixel_array_scaled, SUB_WINDOW_SIZE_Y, SUB_WINDOW_SIZE_X) 
 
 # Record value of each feature in 5D matrix
 # feature_vals(x, h, w, i, j)
@@ -114,4 +106,4 @@ for h in xrange(2, SUB_WINDOW_SIZE_Y+1, 2):
 									    - calc_sum((i+h/2, j+w/2), (i+h/2, j+w-1), (i+h-1, j+w/2), (i+h-1, j+w-1), integral_image) \
 									    + calc_sum((i+h/2, j), (i+h/2, j+w/2-1), (i+h-1, j), (i+h-1, j+w/2-1), integral_image) \
 
-plot_matrix(feature_vals[5, 20, 16])
+#plot_matrix(feature_vals[3, 2, 10])
